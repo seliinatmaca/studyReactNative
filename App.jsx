@@ -13,9 +13,14 @@ import {
 import uuid from 'react-native-uuid';
 
 const App = () => {
+  //todo ve setTodo: todo kullanıcının şu an girdiği yapılacak öğesini (input alanındaki metin) temsil eder. setTodo bu öğeyi günceller.
   const [todo, setTodo] = useState('');
+  //todos ve setTodos: Tüm yapılacaklar listesini (yapılacak öğeler dizisi) saklayan bir state'tir. setTodos bu diziyi günceller.
   const [todos, setTodos] = useState([]);
 
+  //Bu fonksiyon, yapılacaklar listesini (todos) cihazın yerel depolama alanı olan AsyncStorage'a kaydeder.
+  // Yapılacaklar dizisi JSON formatına dönüştürülür ve kaydedilir.
+  // Eğer bir hata oluşursa, bu hata konsola yazdırılır.
   const saveTodos = async saveTodo => {
     try {
       await AsyncStorage.setItem('todos', JSON.stringify(saveTodo));
@@ -24,6 +29,12 @@ const App = () => {
     }
   };
 
+  // Kullanıcı yeni bir görev eklemek istediğinde, bu fonksiyon çalışır.
+  // Eğer todo boş değilse:
+  // uuid.v4() ile her görev için benzersiz bir id oluşturulur ve todo ile birlikte yeni bir görev olarak diziye eklenir.
+  // todos güncellenir ve ekrana yansıtılır.
+  // Güncel todos AsyncStorage'a kaydedilir.
+  // setTodo('') ile input alanı temizlenir, böylece kullanıcı yeni bir görev ekleyebilir.
   const addTodo = () => {
     if (todo) {
       const updateTodos = [...todos, {id: uuid.v4(), text: todo}];
@@ -33,6 +44,8 @@ const App = () => {
     }
   };
 
+  //Uygulama açıldığında veya bileşen ilk yüklendiğinde çalışır.
+  //Daha önce AsyncStorage'da kaydedilen görevler varsa, bunlar alınır ve todos state'i ile ekrana yüklenir.
   const loadTodos = async () => {
     try {
       const storedData = await AsyncStorage.getItem('todos');
@@ -44,6 +57,9 @@ const App = () => {
     }
   };
 
+  //   Kullanıcı bir görevi silmek istediğinde bu fonksiyon çalışır.
+  // Belirtilen id'ye sahip olmayan görevler filtrelenir, yani bu görev hariç diğer görevler korunur.
+  // Yeni liste todos state'i ile güncellenir ve ardından AsyncStorage'a kaydedilir.
   const deleteTodo = async id => {
     console.log('id', id);
     console.log('basıldı');
